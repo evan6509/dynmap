@@ -9,8 +9,8 @@ Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-p
 ## Build Commands
 
 ```bash
-# Build all platforms (requires JDK 21 as default)
-./gradlew setup build
+# Build all platforms (requires JDK 25, see below)
+./gradlew build
 
 # Build outputs go to /target directory
 
@@ -19,20 +19,17 @@ Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-p
 
 # Run unit tests (DynmapCore only — JUnit 4)
 ./gradlew :DynmapCore:test
-
-# Forge 1.12.2 (requires JDK 8 - set JAVA_HOME accordingly)
-cd oldgradle
-./gradlew setup build
 ```
 
 **JDK Requirements:**
-- Default: JDK 21
-- Forge 1.12.2 (oldgradle): JDK 8 strictly required
-- Runtime targets: JDK 8 (1.16-), JDK 16 (1.17.x), JDK 17 (1.18-1.20.4), JDK 21 (1.20.5+)
+- Full build (`./gradlew build`): JDK 25 — required for MC >= 26.x modules (`paper-helper-26x` and so `spigot`, `fabric-26.1`, `forge-26.1`)
+- Other Fabric/Forge modules, `DynmapCoreAPI` and `DynmapCore` build on JDK 21; CI uses JDK 21 for them and JDK 25 for `spigot`, `fabric-26.1` and `forge-26.1`
+- Runtime targets: JDK 8 (1.16-), JDK 16 (1.17.x), JDK 17 (1.18-1.20.4), JDK 21 (1.20.5-1.21.x), JDK 25 (26.x)
 
 **Build notes:**
 - `gradle.properties` sets `org.gradle.parallel=false` and `org.gradle.daemon=false` — do not change these
 - `snakeyaml` is pinned at 1.23 intentionally — newer versions break on Windows-encoded config files
+- `.github/workflows/build-platforms.yml` builds each platform module in a matrix and uploads the jars as artifacts — when adding or removing a platform module (`spigot`, `fabric-*`, `forge-*`), update its module list
 
 ## Architecture
 
@@ -46,8 +43,8 @@ cd oldgradle
 **Platform Implementations:**
 - `spigot/` - Bukkit/PaperMC implementation (`DynmapPlugin.java`)
 - `bukkit-helper-*` - Version-specific NMS code (one per MC version: 1.13-1.21)
-- `fabric-*` - Fabric mod implementations (1.14.4-1.21.x)
-- `forge-*` - Forge mod implementations (1.14.4-1.21.x); `forge-1.12.2` lives in `oldgradle/`
+- `fabric-*` - Fabric mod implementations (1.14.4-1.21.x, 26.x); `fabric-26.1` covers MC 26.1-26.3
+- `forge-*` - Forge mod implementations (1.17.1-1.21.x, 26.x), built with ForgeGradle 7; 1.17.1-1.19.3 are remapped to SRG names by the Renamer plugin; `forge-26.1` covers MC 26.x
 
 ### Dependency Flow
 ```
@@ -90,12 +87,12 @@ The `bukkit-helper-*` modules contain version-specific NMS code; `spigot/` deleg
 Unit tests exist in `DynmapCore/src/test/` (JUnit 4) covering `Matrix3D`, `Vector3D`, `IpAddressMatcher`, `DynIntHashMap`, and `BufferInputStream`. Run with `./gradlew :DynmapCore:test`.
 
 Full verification requires:
-1. Building all platforms: `./gradlew setup build` AND `cd oldgradle && ./gradlew setup build`
+1. Building all platforms: `./gradlew build`
 2. Manual testing on target Minecraft server platforms
 
 ## Critical Contribution Rules
 
-**PRs must build and test on ALL platforms including oldgradle. Changes to DynmapCore/DynmapCoreAPI require testing on all platforms.**
+**PRs must build and test on ALL platforms. Changes to DynmapCore/DynmapCoreAPI require testing on all platforms.**
 
 - **Java 8 compatibility required** — Code must compile and run on Java 8
 - **Java only** — No Kotlin, Scala, or other JVM languages
