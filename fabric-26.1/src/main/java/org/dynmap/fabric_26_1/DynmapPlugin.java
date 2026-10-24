@@ -639,7 +639,7 @@ public class DynmapPlugin {
             LevelChunkSection[] sections = chunk.getSections();
             for (int i = 0; i < sections.length; i++) {
                 if ((sections[i] != null) && (!sections[i].hasOnlyAir())) {
-					int sy = chunk.getMinY() + i * 4096 /* LevelChunkSection.SECTION_HEIGHT removed in 26.2, but SECTION_HEIGHT = 16*16*16 = 4096 */;
+					int sy = chunk.getMinY() + i * 16; // Sections are 16 blocks tall (4096 blocks in volume).
 					if (sy < ymin) ymin = sy;
 					if ((sy+16) > ymax) ymax = sy + 16;
                 }

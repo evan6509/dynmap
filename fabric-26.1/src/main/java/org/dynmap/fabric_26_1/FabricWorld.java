@@ -192,7 +192,7 @@ public class FabricWorld extends DynmapWorld {
     @Override
     public int getSkyLightLevel(int x, int y, int z) {
         if (world != null) {
-            return world.getMaxLocalRawBrightness(new BlockPos(x, y, z), 0); // 0 = sky light??
+            return world.getBrightness(LightLayer.SKY, new BlockPos(x, y, z));
         } else
             return -1;
     }
