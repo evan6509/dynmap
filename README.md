@@ -1,6 +1,49 @@
 # Dynmap®  - dynamic web maps for Minecraft servers
 
+# Fork review status
+This is [evan6509/dynmap](https://github.com/evan6509/dynmap), a fork of
+[webbukkit/dynmap](https://github.com/webbukkit/dynmap). The `codex/fabric-26.3-port`
+branch is under review in [PR #1](https://github.com/evan6509/dynmap/pull/1), targeting
+this fork's `v3.0` branch. It adopts the upstream community-edition baseline and is
+not an upstream-supported release. This fork's builds are unofficial and are not
+supported or endorsed by the Dynmap team. Direct fork-specific questions to the
+fork maintainer through PR #1 rather than upstream support channels.
+
+This fork has [no published GitHub Releases](https://github.com/evan6509/dynmap/releases)
+or release assets. The upstream download links below do not provide this review build.
+
+The Fabric review work uses the `fabric-26.1` module. Its metadata allows Minecraft
+26.1, 26.1.1, 26.2, and 26.3, and its source includes adaptations for 26.3 sign
+updates and chunk palettes. Its default build still targets Minecraft 26.1 with
+Fabric Loader 0.19.5 and Fabric API 0.145.1+26.1; metadata alone does not establish
+runtime compatibility with every listed version.
+
+PR #1 reports a Minecraft 26.3 compile/package and JAR audit using Java 25, Loader
+0.19.5, and Fabric API 0.165.0+26.3, plus 93 passing DynmapCore JUnit tests. These
+are reported build/test results, not connected-client gameplay evidence. The full
+multi-platform build was reported incomplete because of a Gradle/Loom cache lock.
+No connected server/client smoke test is reported; 26.3 runtime behavior remains
+unverified.
+
+To build the 26.3 review candidate locally, use JDK 25 and the checked-in Gradle
+9.5.1 wrapper from the repository root:
+
+```sh
+./gradlew :fabric-26.1:build -Pminecraft_version=26.3 -Ploader_version=0.19.5 -Pfabric_version=0.165.0+26.3
+```
+
+With the checked-in `version=3.x-Dev`, the output is
+`target/Dynmap-CE-3.x-Dev-fabric-26.3.jar`. Without these overrides,
+`:fabric-26.1:build` produces `target/Dynmap-CE-3.x-Dev-fabric-26.1.jar`.
+The configured build workflow uploads platform JARs from `target/` when run; it
+triggers on pushes to `v3.0-community-edition`, version tags matching its `ce-*`
+filter, or manual dispatch, not automatically on this review branch or its PR.
+Its Fabric 26.x matrix entry builds the default 26.1 target, not the 26.3 override
+above. Workflow configuration does not establish that an artifact or successful
+run exists for this review head.
+
 # Jump around the README
+* [Fork review status](#fork-review-status)
 * [How to build](#how-to-build)
 * [What platforms are supported?](#what-platforms-are-supported)
 * [Data Storage](#data-storage)
@@ -10,8 +53,8 @@
 * [Where to go to make donations](#where-to-go-to-make-donations)
 # How to build
 Dynmap 3.x+ uses Gradle 9 for building support for all platforms, with all resulting artifacts produced in the /target directory. The developer's
-default JDK must be a JDK 21 version - older versions will still be compiled
-to run on the default JDK for those platforms (JDK 8 for 1.16 and earlier, JDK 16 for 1.17.x, JDK 17 for 1.18 to 1.20.4, JDK 21 for 1.20.5+), and
+default JDK for older platform builds is JDK 21; 26.x builds require JDK 25. Older versions will still be compiled
+to run on the default JDK for those platforms (JDK 8 for 1.16 and earlier, JDK 16 for 1.17.x, JDK 17 for 1.18 to 1.20.4, JDK 21 for 1.20.5 through 1.21.x, JDK 25 for 26.x), and
 common libraries are built using JDK 8. Gradle does not download a JDK for you, so install the ones you need where Gradle can find them.
 
 To build and get all jars in `target/`, run:
@@ -27,11 +70,16 @@ Those familiar with gradle can save time by specifying a build (or commenting in
 NOTE: PR code submissions MUST be built and TESTED for ALL platforms, or be rejected and negatively influence future approvals. 
 For more check [contributing rules](#contributing-to-dynmaps-code).
 
-    ./gradlew :fabric-1.18:build
+    ./gradlew :fabric-1.18.2:build
 
     
 # What platforms are supported?
-The following target platforms are supported, and you can find them at the links supplied:
+The following table retains upstream download references and their listed version
+ranges. It is not a support matrix for this review branch or a guarantee of the
+latest published upstream versions; check each download page for available releases.
+For this fork's unreleased Fabric 26.3 review candidate, see [Fork review status](#fork-review-status).
+The current branch also contains newer platform modules in `settings.gradle` and
+no longer includes Forge 1.12.2–1.16.5 build modules.
 
 | Server type  | Version | Dynmap JAR | Where? |
 | ------------ | ------- | ---------- | ------ |
